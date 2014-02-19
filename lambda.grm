@@ -1,0 +1,53 @@
+structure A = Absyn
+
+
+%%
+
+%term
+    EOF
+  | LAM
+  | DOT
+  |  LET  
+  |  IN 
+  | LPAREN 
+  | RPAREN 
+  | EQUALS 
+  | ID of string
+  
+%nonterm program 
+       | toplevel
+       | term
+       | app
+       | factor
+       | lambda   
+
+%pos int
+%verbose
+%start program
+%eop EOF
+%noshift EOF
+
+%name Lambda
+
+%keyword LAM
+
+%value ID ("bogus")
+
+%%
+program : toplevel ()
+
+toplevel : LET ID EQUALS term IN toplevel ()
+       | term  ()
+	       
+
+term : LAM lambda ()
+       | app ()
+
+app : term factor ()
+      | factor ()
+
+factor : ID ()
+      | LPAREN term RPAREN
+      
+lambda : DOT term
+       | ID lambda
